@@ -4,17 +4,14 @@ import { getIds, getItems, getFields, getIdsByFilter } from "../../api"
 import Pagination from "../Pagination/Pagination"
 
 export default function Filter() {
-    const [filterName, setFilterName] = useState('')
-    const [filterBrand, setFilterBrand] = useState('')
-    const [filterPrice, setFilterPrice] = useState(0)
     const [data, setData] = useState([])
 
     const [brands, setBrands] = useState([])
 
-    function filterData(incomeData){
-        const newData = data.filter((id, index, data) => data.includes(incomeData))
-        setData(newData)
-    }
+    // function filterData(incomeData){
+    //     const newData = data.filter((id, index, data) => data.includes(incomeData))
+    //     setData(newData)
+    // }
 
     const productInput = useRef(null)
     const priceInput = useRef(null)
@@ -130,7 +127,6 @@ export default function Filter() {
                         onChange={priceHandler}
                         id="priceFilter"
                     />
-                    <label htmlFor="priceFilter"> {filterPrice} </label>
                 </div>
 
                 <select

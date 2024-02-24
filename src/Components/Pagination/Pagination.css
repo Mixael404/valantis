@@ -1,0 +1,20 @@
+.controls{
+    display: flex;
+    justify-content: space-around;
+}
+.controls .forward, .controls .back{
+    color: red;
+}
+.controls .forward, .controls .back, .controls .pageNumber{
+    font-size: 48px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+}
+.controls .forward:hover, .controls .back:hover{
+    transform: scale(1.2, 1.2);
+}
+
+.controls .forward.disabled, .controls .back.disabled{
+    color: grey;
+}

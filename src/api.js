@@ -20,6 +20,14 @@ function filterDuplicates(ids){
     return filteredArr
 }
 
+function filterObjects(objects){
+    const filteredObjects = objects.filter((post, index, array) => {
+        const i = array.findIndex((obj) => obj.id === post.id )
+        return index === i 
+    })
+    return filteredObjects
+}
+
 async function getIds(offset = null, limit = null) {
     const body = {
         "action": "get_ids",
@@ -51,7 +59,7 @@ async function getItems(ids=[]) {
         body: JSON.stringify(body)
     })
     const data = await response.json()
-    return data
+    return filterObjects(data.result)
 }
 
 async function getFields(field = null, offset = null, limit = null) {
