@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import "./Filter.css"
 import { getIds, getItems, getFields, getIdsByFilter } from "../../api"
+import Pagination from "../Pagination/Pagination"
 
 export default function Filter() {
     const [filterName, setFilterName] = useState('')
@@ -15,32 +16,40 @@ export default function Filter() {
         setData(newData)
     }
 
+    const productInput = useRef(null)
+    const priceInput = useRef(null)
+    const brandInput = useRef(null)
+
     function submitHandler() {
         let filter = {}
-        if (filterName) filter = { "product": filterName }
-        if (filterPrice) filter = { "price": +(filterPrice) }
-        if (filterBrand) filter = { "brand": filterBrand }
+        if (productInput.current.value) filter = { "product": productInput.current.value }
+        if (priceInput.current.value) filter = { "price": +(priceInput.current.value) }
+        if (brandInput.current.value) filter = { "brand": brandInput.current.value }
         console.log(filter);
         getIdsByFilter(filter)
             .then((data) => {
-                console.log(data)
                 setData(data)
             })
     }
     function nameHandler(e) {
-        setFilterBrand('')
-        setFilterPrice('')
-        setFilterName(e.target.value)
+        priceInput.current.value = ''
+        brandInput.current.value = ''
+        // setFilterBrand('')
+        // priceInput.current.value = ''
+        // setFilterName(e.target.value)
     }
     function priceHandler(e) {
-        setFilterName('')
-        setFilterBrand('')
-        setFilterPrice(e.target.value)
+        brandInput.current.value = ''
+        productInput.current.value = ''
+        // setFilterName('')
+        // setFilterBrand('')
+        // setFilterPrice(e.target.value)
     }
     function brandHandler(e) {
-        setFilterName('')
-        setFilterPrice('')
-        setFilterBrand(e.target.value)
+        priceInput.current.value = ''
+        productInput.current.value = ''
+        // setFilterName('')
+        // setFilterBrand(e.target.value)
     }
 
 
@@ -107,14 +116,17 @@ export default function Filter() {
                 <input
                     placeholder="Name"
                     type="text"
-                    value={filterName}
+                    ref={productInput}
+                    // value={filterName}
                     onChange={nameHandler}
                 />
 
                 <div className="price">
                     <input
                         type="number"
-                        value={filterPrice}
+                        placeholder="Price"
+                        ref={priceInput}
+                        // value={filterPrice}
                         onChange={priceHandler}
                         id="priceFilter"
                     />
@@ -124,8 +136,9 @@ export default function Filter() {
                 <select
                     name=""
                     id=""
+                    ref={brandInput}
                     onChange={brandHandler}
-                    value={filterBrand}
+                    // value={filterBrand}
                 >
                     <option value=''>Select brand</option>
                     {
@@ -137,6 +150,7 @@ export default function Filter() {
                     type="submit"
                 />
             </div>
+            <Pagination data={data} />
         </>
     )
 }

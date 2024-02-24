@@ -1,15 +1,18 @@
+import md5 from "js-md5";
+
 const url = 'http://api.valantis.store:40000/'
-const password = process.env.PASSWORD;
+// TODO: Вынести в envLocal
+const PASSWORD = "Valantis";
 const today = new Date();
+
 
 const year = today.getFullYear()
 const month = (today.getMonth() + 1).toString().padStart(2, '0')
 const day = today.getDate().toString().padStart(2, '0')
 const dateKey = `${year}${month}${day}`
 
-const authKey = `${password}_${dateKey}`
-// TODO: Make generation using md5. Download md5 library and implement it.
-const tmpKey = "80b8a664896f96245af9c5df02e851c3"
+const textKey = `${PASSWORD}_${dateKey}`
+const authKey = md5(textKey)
 
 function filterDuplicates(ids){
     const dataSet = new Set(ids)
@@ -26,7 +29,7 @@ async function getIds(offset = null, limit = null) {
         method: "POST",
         headers: {
             "content-type": "application/json",
-            "X-AUTH": tmpKey
+            "X-AUTH": authKey
         },
         body: JSON.stringify(body)
     })
@@ -43,7 +46,7 @@ async function getItems(ids=[]) {
         method: "POST",
         headers: {
             "content-type": "application/json",
-            "X-AUTH": tmpKey
+            "X-AUTH": authKey
         },
         body: JSON.stringify(body)
     })
@@ -60,7 +63,7 @@ async function getFields(field = null, offset = null, limit = null) {
         method: "POST",
         headers: {
             "content-type": "application/json",
-            "X-AUTH": tmpKey
+            "X-AUTH": authKey
         },
         body: JSON.stringify(body)
     })
@@ -77,7 +80,7 @@ async function getIdsByFilter(filter = {}) {
         method: "POST",
         headers: {
             "content-type": "application/json",
-            "X-AUTH": tmpKey
+            "X-AUTH": authKey
         },
         body: JSON.stringify(body)
     })

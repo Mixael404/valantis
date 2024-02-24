@@ -1,0 +1,7 @@
+.postItem{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    padding: 3px 6px;
+    margin-bottom: 6px;
+}
