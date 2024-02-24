@@ -1,50 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostList from "../PostList/PostList";
 import './Pagination.css'
 
-export default function Pagination({data = []}){
+export default function Pagination({ data }) {
     const [page, setPage] = useState(1)
+    const [postsToShow, setPostsToShow] = useState([])
     console.log(data);
     const limit = 50
     const totalNumberOfPosts = data.length
-    const amountOfPages = Math.ceil(totalNumberOfPosts/limit)
+    const amountOfPages = Math.ceil(totalNumberOfPosts / limit)
     console.log(amountOfPages);
     const firstPostIndex = page * 50 - 50
-    const postsToShow = data.slice(firstPostIndex, firstPostIndex + 50)
 
-    function handleBack(){
-        if(page > 1){
+    function handleBack() {
+        if (page > 1) {
             setPage((prev) => prev - 1)
-        } else{
+        } else {
             console.log("All");
         }
     }
-    function handleForward(){
-        if(page < amountOfPages){
+    function handleForward() {
+        if (page < amountOfPages) {
             setPage((prev) => prev + 1)
-        } else{
+        } else {
             console.log("All");
         }
     }
 
-    return(
+    useEffect(() => {
+        const toShow = data.slice(firstPostIndex, firstPostIndex + limit)
+        setPostsToShow(toShow)
+    }, [data, page])
+
+    return (
         <div className="pagination">
             <PostList data={postsToShow} />
             <div className="controls">
                 <span
-                className={page === 1 ? 'back disabled' : 'back'}
-                onClick={handleBack}
+                    className={page === 1 ? 'back disabled' : 'back'}
+                    onClick={handleBack}
                 >
                     {'<'}
                 </span>
                 <span
-                className="pageNumber"
+                    className="pageNumber"
                 >
                     {page}
                 </span>
                 <span
-                className={page === amountOfPages ? 'forward disabled' : 'forward'}
-                onClick={handleForward}
+                    className={page === amountOfPages ? 'forward disabled' : 'forward'}
+                    onClick={handleForward}
                 >
                     {'>'}
                 </span>

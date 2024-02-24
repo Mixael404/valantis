@@ -6,14 +6,20 @@ import Preloader from "../Preloader"
 export default function PostList({ data }) {
     const [posts, setPosts] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    console.log("INCOME DATA IN PROPS");
-    console.log(data);
 
     useEffect(() => {
+        console.log("Работает юз эффект в пост листе");
+        setIsLoading(true)
         getItems(data)
             .then((res) => {
-                setPosts(res)
-                setIsLoading(false)
+                console.log("Data from pagination");
+                console.log(data);
+                // Добавил проверку на то, что что-то есть в ответе от сервера.
+                if(res.length){
+                    setPosts(res)
+                    setIsLoading(false)
+                }
+                console.log("Result: ============");
                 console.log(res);
             })
     }, [data])
