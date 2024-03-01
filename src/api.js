@@ -18,7 +18,6 @@ function checkResponse(response) {
     return new Promise(async function(resolve, reject) {
         if(response.status === 200) {
             const data = await response.json();
-            console.log(data);
             resolve(data.result);
         }  else {
             const data = await response.text();
@@ -124,8 +123,6 @@ async function getIdsByFilter(filter = {}) {
             body: JSON.stringify(body)
         })
         const data = await checkResponse(response)
-        console.log("Data in API: ");
-        console.log(data);
         return filterDuplicates(data)
     } catch (error) {
         console.warn("Error: " + error);
