@@ -5,7 +5,6 @@ export default function PostItem(props){
     // const [name, setName] = useState('')
     const {id, product, price, brand} = props
 
-
     // useEffect(() => {
     //     getItems([id])
     //         .then((data) => {

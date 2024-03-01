@@ -10,6 +10,8 @@ export default function Pagination({ data, isLoading, currentPage, setCurrentPag
     const amountOfPages = Math.ceil(totalNumberOfPosts / limit)
     const firstPostIndex = page * 50 - 50
 
+    console.log(data);
+    console.log(typeof data[0]);
     function handleBack() {
         if (currentPage > 1) {
             setPage((prev) => prev - 1)

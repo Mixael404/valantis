@@ -10,8 +10,8 @@ export default function Filter() {
     const [isLoading, setIsLoading] = useState(true)
     const [brands, setBrands] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
-    
-    const [filter, setFilter] = useState({})
+
+    const [filter, setFilter] = useState(null)
 
     // function filterData(incomeData){
     //     const newData = data.filter((id, index, data) => data.includes(incomeData))
@@ -47,8 +47,8 @@ export default function Filter() {
         //     setIsLoading(false)
         // })
         const ids = await getIdsByFilter(filter)
-        const items = await getItems(ids)
-        setData(items)
+        // const items = await getItems(ids)
+        setData(ids)
         setIsLoading(false)
     }
     function nameHandler(e) {
@@ -74,16 +74,28 @@ export default function Filter() {
 
     // TODO: Написать юз эффект с зависимостью от текущей страницы, в котором получать айди с заданным оффсетом и лимитом. Лимит - константа, оффсет рассчитывать исходя из текущей страницы. При монтировании скачивать 100 постов, при переходе - 50 на следующей странице.
 
-    // TODO: Протестить правильность работы, обрабатывать случай с движением назад. Накидывать класс дисэйблед во время загрузки. Подружить эффект с фильтром.
+    // TODO: Протестить правильность работы, обрабатывать случай с движением назад.(Добавить параметр направления)
+
+    // TODO: Если есть фильтр - получаем все айди сразу и пагинируемся по айтемам 
     useEffect(() => {
-        console.log("Current page: " + currentPage);
-        const offset = currentPage * 50;
-        console.log("Offset: " + offset);
-        if(currentPage > 1){
-            getIds(offset, 51)
-                .then(data => getItems(data))
-                .then((data) => setData((prev) => [...prev, ...data]))
-        }
+        if (!filter) {
+            console.log("Current page: " + currentPage);
+            const offset = currentPage * 50;
+            console.log("Offset: " + offset);
+            if (currentPage > 1) {
+
+                getIds(offset, 50)
+                    .then(data => getItems(data))
+                    .then((data) => {
+                        setData((prev) => [...prev, ...data])
+                    })
+            }
+        }         
+        // else {
+        //     const start = currentPage * 50 - 50
+        //     const end = start + 49
+        //     const idsToShow = data.slice(start, end)
+        // }
     }, [currentPage])
 
     useEffect(() => {
@@ -95,7 +107,7 @@ export default function Filter() {
                 setBrands(uniqueBrands)
             })
 
-        getIds(0 , 101)
+        getIds(0, 101)
             .then(data => getItems(data))
             .then(data => {
                 console.log(data);
