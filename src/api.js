@@ -14,6 +14,19 @@ const dateKey = `${year}${month}${day}`
 const textKey = `${PASSWORD}_${dateKey}`
 const authKey = md5(textKey)
 
+function checkResponse(response) {
+    return new Promise(async function(resolve, reject) {
+        if(response.status === 200) {
+            const data = await response.json();
+            console.log(data);
+            resolve(data.result);
+        }  else {
+            const data = await response.text();
+            reject(data)
+        }
+    })
+}
+
 function filterDuplicates(ids){
     const dataSet = new Set(ids)
     const filteredArr = [...dataSet]
@@ -29,71 +42,96 @@ function filterObjects(objects){
 }
 
 async function getIds(offset = null, limit = null) {
-    const body = {
-        "action": "get_ids",
-        "params": {"offset": offset, "limit": limit}
+    try{
+        const body = {
+            "action": "get_ids",
+            "params": {"offset": offset, "limit": limit}
+        }
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "X-AUTH": authKey
+            },
+            body: JSON.stringify(body)
+        })
+        const data = await checkResponse(response)
+        return filterDuplicates(data)
+    } catch(err){
+        console.warn("Error: " + err);
+        return getIds(offset,limit)
     }
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "X-AUTH": authKey
-        },
-        body: JSON.stringify(body)
-    })
-    const data = await response.json()
-    return filterDuplicates(data.result)
 }
 
 async function getItems(ids=[]) {
-    const body = {
-        "action": "get_items",
-        "params": {"ids": ids}
+    try {
+        const body = {
+            "action": "get_items",
+            "params": {"ids": ids}
+        }
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "X-AUTH": authKey
+            },
+            body: JSON.stringify(body)
+        })
+        const data = await checkResponse(response)
+        return filterObjects(data)
+    } catch (error) {
+        console.warn("Error: " + error);
+        return getItems(ids)
     }
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "X-AUTH": authKey
-        },
-        body: JSON.stringify(body)
-    })
-    const data = await response.json()
-    return filterObjects(data.result)
+    
 }
 
 async function getFields(field = null, offset = null, limit = null) {
-    const body = {
-        "action": "get_fields",
-        "params": {"field": field, "offset": offset ,"limit": limit}
+    try {
+        const body = {
+            "action": "get_fields",
+            "params": {"field": field, "offset": offset ,"limit": limit}
+        }
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "X-AUTH": authKey
+            },
+            body: JSON.stringify(body)
+        })
+        const data = await checkResponse(response)
+        return data
+    } catch (error) {
+        console.warn("Error: " + error);
+        return getFields(field, offset, limit)
     }
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "X-AUTH": authKey
-        },
-        body: JSON.stringify(body)
-    })
-    const data = await response.json()
-    return data.result
+    
 }
 
 async function getIdsByFilter(filter = {}) {
-    const body = {
-        "action": "filter",
-        "params": filter
+    try {
+        const body = {
+            "action": "filter",
+            "params": filter
+        }
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "X-AUTH": authKey
+            },
+            body: JSON.stringify(body)
+        })
+        const data = await checkResponse(response)
+        console.log("Data in API: ");
+        console.log(data);
+        return filterDuplicates(data)
+    } catch (error) {
+        console.warn("Error: " + error);
+        return getIdsByFilter(filter)
     }
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "X-AUTH": authKey
-        },
-        body: JSON.stringify(body)
-    })
-    const data = await response.json()
-    return filterDuplicates(data.result)
+    
 }
 
 export { getIds, getItems, getFields, getIdsByFilter }
