@@ -4,7 +4,6 @@ import { getItems } from "../../api";
 import './Pagination.css'
 import Preloader from "../Preloader";
 
-
 // Все айди есть в филтре и пагинации. Нужно вынести подгрузку необходимых данных куда то на этот уровень. Подгружать например 100 постов. Эти 100 постов нарезать по 50 и спускать в постЛист. При переходе на страницу 2 скачиваются посты следующей страницы.
 
 // За обновление массива айдишников отвечает фильтр. При их изменении перемонтируется всё. Стейты очищаются.
@@ -22,6 +21,7 @@ import Preloader from "../Preloader";
 
 // data - все айди прошедшие фильтр
 
+
 export default function Pagination({ data }) {
     const [page, setPage] = useState(1)
     const [downloadedPosts, setDownloadedPosts] = useState([])
@@ -29,12 +29,11 @@ export default function Pagination({ data }) {
     const [isLoading, setIsLoading] = useState(true)
 
     // Чтобы отображать стрелку неработающей и прерывать переход по страницам, пока посты не подгрузились
-    const [isLastDownloaded, setIsLastDownloaded] = useState(false)
+    const [isLastDownloadedPage, setIsLastDownloadedPage] = useState(true)
 
     const limit = 50
     const totalNumberOfPosts = data.length
     const amountOfPages = Math.ceil(totalNumberOfPosts / limit)
-    console.log(amountOfPages);
     const firstPostIndex = page * 50 - 50
 
     function handleBack() {
@@ -44,8 +43,11 @@ export default function Pagination({ data }) {
             console.log("All");
         }
     }
+
+    // TODO: Подумать что сделать с маркером стрелки, если посты ещё не скачались, или убрать совсем (тогда пропадёт стейт downloadedPosts)
+
     function handleForward() {
-        if (page < amountOfPages && !isLastDownloaded) {
+        if (page < amountOfPages) {
             setPage((prev) => prev + 1)
         } else {
             console.log("All");
@@ -58,27 +60,27 @@ export default function Pagination({ data }) {
         getItems(firstPosts)
             .then((data) => {
                 setDownloadedPosts(data)
-                console.log(data);
                 setIsLoading(false)
+                setIsLastDownloadedPage(false)
             })
     }, [])
 
     useEffect(() => {
         const toShow = downloadedPosts.slice(firstPostIndex, firstPostIndex + limit)
-        console.log(toShow);
         setPostsToShow(toShow)
-
+        
         // Функция подкачки постов
         const lastDownloadedPage = Math.ceil(downloadedPosts.length / 50)
-        if(page === lastDownloadedPage && page !== amountOfPages){
-            setIsLastDownloaded(true)
+        if(page === lastDownloadedPage - 1 && page !== (amountOfPages - 1)){ // Включаем подкачку на первой подкачанной странице, а не на последней
+            // setIsLastDownloadedPage(true)
+            console.log("Зашёл в подкачку");
             console.warn("Need to download more");
-            const firstIndex = page * limit
-            const ids = data.slice(firstIndex, firstIndex + limit)
+            const firstIndex = (page + 1) * limit
+            const ids = data.slice(firstIndex, firstIndex + limit * 2 ) // 2 - количество страниц, которое будет подкачано 
             getItems(ids)
                 .then((posts) => {
                     setDownloadedPosts((prev) => [...prev, ...posts])
-                    setIsLastDownloaded(false)
+                    // setIsLastDownloadedPage(false)
                 })
         }
     }, [data, page, firstPostIndex, downloadedPosts])
@@ -102,7 +104,7 @@ export default function Pagination({ data }) {
                     {page}
                 </span>
                 <span
-                    className={((page === amountOfPages) || isLastDownloaded) ? 'forward disabled' : 'forward'}
+                    className={((page === amountOfPages) || isLastDownloadedPage) ? 'forward disabled' : 'forward'}
                     onClick={handleForward}
                 >
                     {'>'}

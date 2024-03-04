@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react"
 import PostItem from "../PostItem/PostItem"
-import { getItems } from '../../api'
-import Preloader from "../Preloader"
 
 export default function PostList({ data }) {
     // const [posts, setPosts] = useState([])

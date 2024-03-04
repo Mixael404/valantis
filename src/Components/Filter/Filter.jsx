@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import "./Filter.css"
-import { getIds, getItems, getFields, getIdsByFilter } from "../../api"
+import { getIds, getFields, getIdsByFilter } from "../../api"
 import Pagination from "../Pagination/Pagination"
 import Preloader from "../Preloader"
 
@@ -8,11 +8,6 @@ export default function Filter() {
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [brands, setBrands] = useState([])
-
-    // function filterData(incomeData){
-    //     const newData = data.filter((id, index, data) => data.includes(incomeData))
-    //     setData(newData)
-    // }
 
     const productInput = useRef(null)
     const priceInput = useRef(null)
@@ -31,25 +26,17 @@ export default function Filter() {
                 setIsLoading(false)
             })
     }
-    function nameHandler(e) {
+    function nameHandler() {
         priceInput.current.value = ''
         brandInput.current.value = ''
-        // setFilterBrand('')
-        // priceInput.current.value = ''
-        // setFilterName(e.target.value)
     }
-    function priceHandler(e) {
+    function priceHandler() {
         brandInput.current.value = ''
         productInput.current.value = ''
-        // setFilterName('')
-        // setFilterBrand('')
-        // setFilterPrice(e.target.value)
     }
-    function brandHandler(e) {
+    function brandHandler() {
         priceInput.current.value = ''
         productInput.current.value = ''
-        // setFilterName('')
-        // setFilterBrand(e.target.value)
     }
 
 
@@ -70,47 +57,6 @@ export default function Filter() {
     }, [])
 
 
-    // useEffect(() => {
-    //     setFilterName('')
-    //     setFilterBrand('')
-    //     const filter = {
-    //         "price": +(filterPrice),
-    //     }
-    //     console.log(filter);
-    //     getIdsByFilter(filter)
-    //         .then((data) => {
-    //             // console.log("Income data: " + data)
-    //             // console.log("Filtered data: " + filterData(data));
-    //             setData(data)
-    //         })
-    // }, [filterPrice])
-
-
-    // useEffect(() => {
-    //     setFilterPrice('')
-    //     setFilterBrand('')
-    //     const filter = {
-    //         "product": filterName,
-    //     }
-    //     console.log(filter);
-    //     getIdsByFilter(filter)
-    //         .then((data) => {
-    //             // console.log("Income data: " + data)
-    //             // console.log("Filtered data: " + filterData(data));
-    //             setData(data)
-    //         })
-    // }, [filterName])
-
-
-    // useEffect(() => {
-    //     const filter = {
-    //         "brand": filterBrand,
-    //     }
-    //     console.log(filter);
-    //     getIdsByFilter(filter)
-    //         .then((data) => console.log(data))
-    // }, [filterBrand])
-
     return (
         <>
             <div className="filtres">
@@ -118,7 +64,6 @@ export default function Filter() {
                     placeholder="Name"
                     type="text"
                     ref={productInput}
-                    // value={filterName}
                     onChange={nameHandler}
                 />
 
@@ -127,7 +72,6 @@ export default function Filter() {
                         type="number"
                         placeholder="Price"
                         ref={priceInput}
-                        // value={filterPrice}
                         onChange={priceHandler}
                         id="priceFilter"
                     />
@@ -138,7 +82,6 @@ export default function Filter() {
                     id=""
                     ref={brandInput}
                     onChange={brandHandler}
-                // value={filterBrand}
                 >
                     <option value=''>Select brand</option>
                     {
