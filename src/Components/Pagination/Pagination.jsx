@@ -26,7 +26,6 @@ export default function Pagination({ data }) {
     const [page, setPage] = useState(1)
     const [downloadedPosts, setDownloadedPosts] = useState([])
     const [postsToShow, setPostsToShow] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
 
     // Чтобы отображать стрелку неработающей и прерывать переход по страницам, пока посты не подгрузились
     const [isLastDownloadedPage, setIsLastDownloadedPage] = useState(true)
@@ -47,7 +46,7 @@ export default function Pagination({ data }) {
     // TODO: Подумать что сделать с маркером стрелки, если посты ещё не скачались, или убрать совсем (тогда пропадёт стейт downloadedPosts)
 
     function handleForward() {
-        if (page < amountOfPages) {
+        if (page < amountOfPages && !isLastDownloadedPage) {
             setPage((prev) => prev + 1)
         } else {
             console.log("All");
@@ -55,12 +54,10 @@ export default function Pagination({ data }) {
     }
 
     useEffect(() => {
-        setIsLoading(true)
         const firstPosts = data.slice(0, 100)
         getItems(firstPosts)
             .then((data) => {
                 setDownloadedPosts(data)
-                setIsLoading(false)
                 setIsLastDownloadedPage(false)
             })
     }, [])
@@ -71,16 +68,18 @@ export default function Pagination({ data }) {
         
         // Функция подкачки постов
         const lastDownloadedPage = Math.ceil(downloadedPosts.length / 50)
+        if(page > lastDownloadedPage){
+            setIsLastDownloadedPage(true)
+        }
+        
         if(page === lastDownloadedPage - 1 && page !== (amountOfPages - 1)){ // Включаем подкачку на первой подкачанной странице, а не на последней
-            // setIsLastDownloadedPage(true)
-            console.log("Зашёл в подкачку");
             console.warn("Need to download more");
             const firstIndex = (page + 1) * limit
             const ids = data.slice(firstIndex, firstIndex + limit * 2 ) // 2 - количество страниц, которое будет подкачано 
             getItems(ids)
                 .then((posts) => {
                     setDownloadedPosts((prev) => [...prev, ...posts])
-                    // setIsLastDownloadedPage(false)
+                    setIsLastDownloadedPage(false)
                 })
         }
     }, [data, page, firstPostIndex, downloadedPosts])
@@ -89,7 +88,7 @@ export default function Pagination({ data }) {
     return (
         <div className="pagination">
             {
-                isLoading ? <Preloader /> : <PostList data={postsToShow} />
+                isLastDownloadedPage ? <Preloader /> : <PostList data={postsToShow} />
             }
             <div className="controls">
                 <span
