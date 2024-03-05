@@ -27,13 +27,16 @@ export default function Pagination({ data }) {
     const [downloadedPosts, setDownloadedPosts] = useState([])
     const [postsToShow, setPostsToShow] = useState([])
 
+    // Чтобы не отправлять новый запрос в случае, если включил страницу, на которой необходимо подкачать данные, быстро перешёл на другую и обратно, пока посты ещё не подкачались
+    const [isLoading, setIsLoading] = useState(false)
+
     // Чтобы отображать стрелку неработающей и прерывать переход по страницам, пока посты не подгрузились
     const [isLastDownloadedPage, setIsLastDownloadedPage] = useState(true)
 
     const limit = 50
     const totalNumberOfPosts = data.length
     const amountOfPages = Math.ceil(totalNumberOfPosts / limit)
-    const firstPostIndex = page * 50 - 50
+    const firstPostIndex = (page - 1) * limit
 
     function handleBack() {
         if (page > 1) {
@@ -62,17 +65,20 @@ export default function Pagination({ data }) {
             })
     }, [])
 
+
+    // Возможно, следует разнести на два эффекта
     useEffect(() => {
         const toShow = downloadedPosts.slice(firstPostIndex, firstPostIndex + limit)
         setPostsToShow(toShow)
         
-        // Функция подкачки постов
+        // Подкачка постов
         const lastDownloadedPage = Math.ceil(downloadedPosts.length / 50)
         if(page > lastDownloadedPage){
             setIsLastDownloadedPage(true)
         }
         
-        if(page === lastDownloadedPage - 1 && page !== (amountOfPages - 1)){ // Включаем подкачку на первой подкачанной странице, а не на последней
+        if(page === lastDownloadedPage - 1 && page !== (amountOfPages - 1) && !isLoading){  // Включаем подкачку на первой подкачанной странице
+            setIsLoading(true)
             console.warn("Need to download more");
             const firstIndex = (page + 1) * limit
             const ids = data.slice(firstIndex, firstIndex + limit * 2 ) // 2 - количество страниц, которое будет подкачано 
@@ -80,6 +86,7 @@ export default function Pagination({ data }) {
                 .then((posts) => {
                     setDownloadedPosts((prev) => [...prev, ...posts])
                     setIsLastDownloadedPage(false)
+                    setIsLoading(false)
                 })
         }
     }, [data, page, firstPostIndex, downloadedPosts])

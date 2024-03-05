@@ -18,6 +18,7 @@ export default function Filter() {
         if (productInput.current.value) filter = { "product": productInput.current.value }
         if (priceInput.current.value) filter = { "price": +(priceInput.current.value) }
         if (brandInput.current.value) filter = { "brand": brandInput.current.value }
+        
         setIsLoading(true)
         console.log(filter);
         getIdsByFilter(filter)
