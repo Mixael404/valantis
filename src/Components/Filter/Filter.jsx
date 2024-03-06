@@ -1,13 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef } from "react"
 import "./Filter.css"
-import { getIds, getFields, getIdsByFilter } from "../../api"
 import Pagination from "../Pagination/Pagination"
 import Preloader from "../Preloader"
 
-export default function Filter() {
-    const [data, setData] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [brands, setBrands] = useState([])
+export default function Filter({data,isLoading,brands, onFilterHandler}) {
 
     const productInput = useRef(null)
     const priceInput = useRef(null)
@@ -18,14 +14,7 @@ export default function Filter() {
         if (productInput.current.value) filter = { "product": productInput.current.value }
         if (priceInput.current.value) filter = { "price": +(priceInput.current.value) }
         if (brandInput.current.value) filter = { "brand": brandInput.current.value }
-        
-        setIsLoading(true)
-        console.log(filter);
-        getIdsByFilter(filter)
-            .then((data) => {
-                setData(data)
-                setIsLoading(false)
-            })
+        onFilterHandler(filter)
     }
     function nameHandler() {
         priceInput.current.value = ''
@@ -39,23 +28,6 @@ export default function Filter() {
         priceInput.current.value = ''
         productInput.current.value = ''
     }
-
-
-    useEffect(() => {
-        getFields("brand")
-            .then(data => {
-                const brands = data.filter(brand => brand !== null)
-                const dataSet = new Set(brands)
-                const uniqueBrands = [...dataSet]
-                setBrands(uniqueBrands)
-            })
-
-        getIds()
-            .then(data => {
-                setData(data)
-                setIsLoading(false)
-            })
-    }, [])
 
 
     return (
