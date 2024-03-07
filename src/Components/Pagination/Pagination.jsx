@@ -24,16 +24,13 @@ export default function Pagination({ data }) {
     function handleBack() {
         if (page > 1) {
             setPage((prev) => prev - 1)
-        } else {
-            console.log("All");
+            setIsLastDownloadedPage(false)
         }
     }
 
     function handleForward() {
         if (page < amountOfPages && !isLastDownloadedPage) {
             setPage((prev) => prev + 1)
-        } else {
-            console.log("All");
         }
     }
 
@@ -52,6 +49,7 @@ export default function Pagination({ data }) {
         setPostsToShow(toShow)
         
         const lastDownloadedPage = Math.ceil(downloadedPosts.length / 50)
+
         if(page > lastDownloadedPage){
             setIsLastDownloadedPage(true)
         }

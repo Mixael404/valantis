@@ -2,7 +2,6 @@ import { useRef } from "react"
 import "./Filter.css"
 import Pagination from "../Pagination/Pagination"
 import Preloader from "../Preloader"
-import PostList from "../PostList/PostList"
 
 export default function Filter({data,isLoading,brands, onFilterHandler}) {
 
@@ -68,7 +67,6 @@ export default function Filter({data,isLoading,brands, onFilterHandler}) {
                 />
             </div>
             {isLoading ? <Preloader /> : <Pagination data={data}/>}
-            {/* {isLoading ? <Preloader /> : <Pagination data={data} ><PostList/></Pagination>} */}
         </>
     )
 }
