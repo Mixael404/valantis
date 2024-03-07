@@ -1,7 +1,6 @@
 import md5 from "js-md5";
 
 const url = 'http://api.valantis.store:40000/'
-// TODO: Вынести в envLocal
 const PASSWORD = "Valantis";
 const today = new Date();
 
@@ -18,7 +17,6 @@ function checkResponse(response) {
     return new Promise(async function(resolve, reject) {
         if(response.status === 200) {
             const data = await response.json();
-            console.log(data);
             resolve(data.result);
         }  else {
             const data = await response.text();
@@ -27,7 +25,7 @@ function checkResponse(response) {
     })
 }
 
-function filterDuplicateIds(ids) {
+function filterDuplicates(ids){
     const dataSet = new Set(ids)
     const filteredArr = [...dataSet]
     return filteredArr
@@ -42,11 +40,11 @@ function filterObjects(objects) {
 }
 
 async function getIds(offset = null, limit = null) {
-    const body = {
-        "action": "get_ids",
-        "params": { "offset": offset, "limit": limit }
-    }
     try{
+        const body = {
+            "action": "get_ids",
+            "params": {"offset": offset, "limit": limit}
+        }
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -55,21 +53,20 @@ async function getIds(offset = null, limit = null) {
             },
             body: JSON.stringify(body)
         })
-        const data = await response.json()
-        return filterDuplicateIds(data.result)
-    } catch (error){
-        console.warn("Error ids");
-        console.info(error);
-        return getIds()
+        const data = await checkResponse(response)
+        return filterDuplicates(data)
+    } catch(err){
+        console.warn("Get ids error: " + err);
+        return getIds(offset,limit)
     }
 }
 
-async function getItems(ids = []) {
-    const body = {
-        "action": "get_items",
-        "params": { "ids": ids }
-    }
+async function getItems(ids=[]) {
     try {
+        const body = {
+            "action": "get_items",
+            "params": {"ids": ids}
+        }
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -78,22 +75,21 @@ async function getItems(ids = []) {
             },
             body: JSON.stringify(body)
         })
-        const data = await response.json()
-        return filterObjects(data.result)
+        const data = await checkResponse(response)
+        return filterObjects(data)
     } catch (error) {
-        console.warn("ОШИБКА items=============");
-        console.info(error);
+        console.warn("Get items error: " + error);
         return getItems(ids)
     }
+    
 }
 
 async function getFields(field = null, offset = null, limit = null) {
-    const body = {
-        "action": "get_fields",
-        "params": { "field": field, "offset": offset, "limit": limit }
-    }
-    try{
-
+    try {
+        const body = {
+            "action": "get_fields",
+            "params": {"field": field, "offset": offset ,"limit": limit}
+        }
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -102,20 +98,21 @@ async function getFields(field = null, offset = null, limit = null) {
             },
             body: JSON.stringify(body)
         })
-        const data = await response.json()
-        return data.result
-    } catch(error){
-        console.warn("Filter error");
+        const data = await checkResponse(response)
+        return data
+    } catch (error) {
+        console.warn("Fields error: " + error);
         return getFields(field, offset, limit)
     }
+    
 }
 
 async function getIdsByFilter(filter = {}) {
-    const body = {
-        "action": "filter",
-        "params": filter
-    }
-    try{
+    try {
+        const body = {
+            "action": "filter",
+            "params": filter
+        }
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -124,16 +121,13 @@ async function getIdsByFilter(filter = {}) {
             },
             body: JSON.stringify(body)
         })
-        
-        const result = await checkResponse(response);
-        return filterDuplicateIds(result)
-    } catch (error){
-        if(error) {
-            console.error("INSIDE CATCH!!!!" + error);
-        }
-        console.warn("Error in getIdsByFilter");
+        const data = await checkResponse(response)
+        return filterDuplicates(data)
+    } catch (error) {
+        console.warn("Filter error: " + error);
         return getIdsByFilter(filter)
     }
+    
 }
 
 export { getIds, getItems, getFields, getIdsByFilter }
