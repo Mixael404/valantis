@@ -1,7 +1,6 @@
 import md5 from "js-md5";
 
 const url = 'http://api.valantis.store:40000/'
-// TODO: Вынести в envLocal
 const PASSWORD = "Valantis";
 const today = new Date();
 
@@ -57,7 +56,7 @@ async function getIds(offset = null, limit = null) {
         const data = await checkResponse(response)
         return filterDuplicates(data)
     } catch(err){
-        console.warn("Error: " + err);
+        console.warn("Get ids error: " + err);
         return getIds(offset,limit)
     }
 }
@@ -79,7 +78,7 @@ async function getItems(ids=[]) {
         const data = await checkResponse(response)
         return filterObjects(data)
     } catch (error) {
-        console.warn("Error: " + error);
+        console.warn("Get items error: " + error);
         return getItems(ids)
     }
     
@@ -102,7 +101,7 @@ async function getFields(field = null, offset = null, limit = null) {
         const data = await checkResponse(response)
         return data
     } catch (error) {
-        console.warn("Error: " + error);
+        console.warn("Fields error: " + error);
         return getFields(field, offset, limit)
     }
     
@@ -125,7 +124,7 @@ async function getIdsByFilter(filter = {}) {
         const data = await checkResponse(response)
         return filterDuplicates(data)
     } catch (error) {
-        console.warn("Error: " + error);
+        console.warn("Filter error: " + error);
         return getIdsByFilter(filter)
     }
     
