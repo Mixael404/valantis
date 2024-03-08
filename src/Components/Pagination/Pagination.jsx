@@ -13,7 +13,7 @@ export default function Pagination({ data }) {
     const [isLoading, setIsLoading] = useState(false)
 
     // Чтобы отображать стрелку неработающей и прерывать переход по страницам, пока посты не подгрузились
-    const [isLastDownloadedPage, setIsLastDownloadedPage] = useState(true)
+    const [isCurrentPageLastDownloaded, setIsCurrentPageLastDownloaded] = useState(true)
 
     const limit = 50
     const totalNumberOfPosts = data.length
@@ -24,12 +24,12 @@ export default function Pagination({ data }) {
     function handleBack() {
         if (page > 1) {
             setPage((prev) => prev - 1)
-            setIsLastDownloadedPage(false)
+            setIsCurrentPageLastDownloaded(false)
         }
     }
 
     function handleForward() {
-        if (page < amountOfPages && !isLastDownloadedPage) {
+        if (page < amountOfPages && !isCurrentPageLastDownloaded) {
             setPage((prev) => prev + 1)
         }
     }
@@ -39,7 +39,7 @@ export default function Pagination({ data }) {
         getItems(firstPosts)
             .then((data) => {
                 setDownloadedPosts(data)
-                setIsLastDownloadedPage(false)
+                setIsCurrentPageLastDownloaded(false)
             })
     }, [])
 
@@ -51,7 +51,7 @@ export default function Pagination({ data }) {
         const lastDownloadedPage = Math.ceil(downloadedPosts.length / 50)
 
         if(page > lastDownloadedPage){
-            setIsLastDownloadedPage(true)
+            setIsCurrentPageLastDownloaded(true)
         }
         
         if(page === lastDownloadedPage - 1 && page !== (amountOfPages - 1) && !isLoading){ 
@@ -62,7 +62,7 @@ export default function Pagination({ data }) {
             getItems(ids)
                 .then((posts) => {
                     setDownloadedPosts((prev) => [...prev, ...posts])
-                    setIsLastDownloadedPage(false)
+                    setIsCurrentPageLastDownloaded(false)
                     setIsLoading(false)
                 })
         }
@@ -72,7 +72,7 @@ export default function Pagination({ data }) {
     return (
         <div className="pagination">
             {
-                isLastDownloadedPage ? <Preloader /> : <PostList data={postsToShow} />
+                isCurrentPageLastDownloaded ? <Preloader /> : <PostList data={postsToShow} />
             }
             <div className="controls">
                 <span
@@ -87,7 +87,7 @@ export default function Pagination({ data }) {
                     {page}
                 </span>
                 <span
-                    className={((page === amountOfPages) || isLastDownloadedPage) ? 'forward disabled' : 'forward'}
+                    className={((page === amountOfPages) || isCurrentPageLastDownloaded) ? 'forward disabled' : 'forward'}
                     onClick={handleForward}
                 >
                     {'>'}

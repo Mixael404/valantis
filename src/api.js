@@ -1,7 +1,7 @@
 import md5 from "js-md5";
 
 const url = 'http://api.valantis.store:40000/'
-const PASSWORD = "Valantis";
+const PASSWORD = process.env.REACT_APP_PASSWORD;
 const today = new Date();
 
 
